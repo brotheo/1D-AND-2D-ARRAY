@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2D Arrays – Student</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f7fb;--card:#ffffff;--ink:#1b1f2a;--muted:#5d6475;--line:#e3e6ee;
+  --brand:#2563eb;--brand-soft:#eaf1ff;--ok:#15803d;--ok-soft:#e8f7ee;--bad:#c2410c;--bad-soft:#fff1e8;
+  --warn:#a16207;--warn-soft:#fff8db;--code-bg:#0f172a;--code-ink:#e2e8f0;--chip:#f1f3f8;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0d1017;--card:#161a24;--ink:#e7e9ef;--muted:#9aa2b5;--line:#2a3040;
+  --brand:#7aa7ff;--brand-soft:#1b2846;--ok:#4ade80;--ok-soft:#12291b;--bad:#fb923c;--bad-soft:#2d1a0e;
+  --warn:#facc15;--warn-soft:#2b2610;--code-bg:#0a0d14;--chip:#1f2430;}}
+:root[data-theme="dark"]{
+  --bg:#0d1017;--card:#161a24;--ink:#e7e9ef;--muted:#9aa2b5;--line:#2a3040;
+  --brand:#7aa7ff;--brand-soft:#1b2846;--ok:#4ade80;--ok-soft:#12291b;--bad:#fb923c;--bad-soft:#2d1a0e;
+  --warn:#facc15;--warn-soft:#2b2610;--code-bg:#0a0d14;--chip:#1f2430;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px 80px}
+header.hero{background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;padding:28px 16px 22px;position:relative}
+header.hero .wrap{padding-bottom:0}
+.hero h1{margin:6px 0 4px;font-size:clamp(24px,4vw,34px);letter-spacing:-.02em}
+.hero p{margin:0;opacity:.92}
+.tag{display:inline-block;background:rgba(255,255,255,.18);border-radius:99px;padding:3px 10px;font-size:13px;font-weight:600;margin-right:6px}
+.theme-toggle{position:absolute;top:14px;right:16px;background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:99px;padding:6px 12px;font:600 13px Inter,sans-serif;cursor:pointer}
+nav.steps{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);margin-bottom:20px}
+nav.steps .wrap{display:flex;gap:6px;overflow-x:auto;padding:10px 16px}
+nav.steps a{flex:none;text-decoration:none;color:var(--muted);background:var(--chip);border-radius:99px;padding:6px 12px;font-size:13px;font-weight:600;white-space:nowrap}
+nav.steps a.done{background:var(--ok-soft);color:var(--ok)}
+nav.steps a.done::before{content:"✓ "}
+section.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;margin:0 0 22px}
+.sec-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.sec-head h2{margin:0;font-size:22px;letter-spacing:-.01em}
+.num{background:var(--brand);color:#fff;border-radius:10px;width:32px;height:32px;display:grid;place-items:center;font-weight:800;flex:none}
+.time{margin-left:auto;background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13px;border-radius:99px;padding:4px 10px}
+.lead{color:var(--muted);margin:4px 0 16px}
+.task{background:var(--brand-soft);border-left:4px solid var(--brand);border-radius:8px;padding:10px 14px;margin:12px 0}
+.task b{color:var(--brand)}
+pre.code,textarea.code{font:14px/1.6 "JetBrains Mono",ui-monospace,monospace;background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:14px;margin:0;overflow:auto;white-space:pre;tab-size:3}
+textarea.code{width:100%;min-height:240px;border:2px solid transparent;resize:vertical;outline:none}
+textarea.code:focus{border-color:var(--brand)}
+textarea.inputs{width:100%;min-height:120px;font:14px/1.6 "JetBrains Mono",monospace;background:var(--chip);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px;resize:vertical}
+.rgrid{display:grid;grid-template-columns:1fr 200px;gap:12px}
+@media (max-width:760px){.rgrid{grid-template-columns:1fr}}
+code{font-family:"JetBrains Mono",monospace;background:var(--chip);border-radius:5px;padding:1px 5px;font-size:.92em}
+.btn{font:inherit;font-weight:600;font-size:14px;border:0;border-radius:9px;padding:9px 14px;cursor:pointer;background:var(--brand);color:#fff}
+.btn.ghost{background:var(--chip);color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+.out{font:14px/1.5 "JetBrains Mono",monospace;background:var(--chip);border-radius:10px;padding:12px;min-height:56px;white-space:pre-wrap;margin:0}
+.fb{border-radius:10px;padding:10px 14px;margin:10px 0;font-weight:500;display:none}
+.fb.show{display:block}
+.fb.ok{background:var(--ok-soft);color:var(--ok)}
+.fb.bad{background:var(--bad-soft);color:var(--bad)}
+.fb.warn{background:var(--warn-soft);color:var(--warn)}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid var(--line);padding:8px;text-align:left}
+th{background:var(--chip);font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.scroll{overflow-x:auto}
+input.cell{width:100%;min-width:56px;font:15px "JetBrains Mono",monospace;padding:6px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink)}
+input.cell.right{background:var(--ok-soft);border-color:var(--ok)}
+input.cell.wrong{background:var(--bad-soft);border-color:var(--bad)}
+select{font:inherit;padding:7px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);max-width:100%}
+.scen{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin:8px 0}
+@media (max-width:560px){.scen{grid-template-columns:1fr}}
+.scen.right{border-color:var(--ok);background:var(--ok-soft)}
+.scen.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.rltp{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+.letter{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--card);cursor:pointer;transition:transform .15s}
+.letter:hover{transform:translateY(-2px)}
+.letter .big{font-size:30px;font-weight:800;color:var(--brand);line-height:1}
+.letter .nm{font-weight:700;margin-top:4px}
+.letter .ex{font-size:13px;color:var(--muted);margin-top:4px;display:none}
+.letter.open .ex{display:block}
+.vv{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+@media (max-width:640px){.vv{grid-template-columns:1fr}}
+.vv div{border-radius:12px;padding:12px 14px}
+.vv .a{background:var(--brand-soft)}.vv .b{background:var(--warn-soft)}
+.vv h4{margin:0 0 6px}
+.vv ul{margin:0;padding-left:18px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.tabs button{font:inherit;font-size:14px;font-weight:600;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer}
+.tabs button.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.isbn{display:grid;grid-template-columns:repeat(9,minmax(46px,1fr)) ;gap:6px;overflow-x:auto}
+.chal{border:1px solid var(--line);border-radius:14px;padding:16px;margin:14px 0}
+.chal h3{margin:0 0 4px}
+.badge{font-size:12px;font-weight:700;border-radius:99px;padding:2px 8px;background:var(--chip);color:var(--muted)}
+.checks{list-style:none;padding:0;margin:8px 0 0}
+.checks li{padding:3px 0}
+.checks li::before{content:"○ ";color:var(--muted)}
+.checks li.y::before{content:"✓ ";color:var(--ok);font-weight:800}
+.checks li.n::before{content:"✗ ";color:var(--bad);font-weight:800}
+.model{display:none;margin-top:10px}
+.model.show{display:block}
+.q{border:1px solid var(--line);border-radius:12px;padding:14px;margin:10px 0}
+.q p{margin:0 0 8px;font-weight:600}
+.opt{display:block;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin:6px 0;cursor:pointer}
+.opt input{margin-right:8px}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.tl{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.lights{display:flex;gap:6px}
+.lights button{width:34px;height:34px;border-radius:50%;border:3px solid transparent;cursor:pointer;opacity:.35}
+.lights button.on{opacity:1;border-color:var(--ink)}
+.lights .r{background:#ef4444}.lights .a{background:#f59e0b}.lights .g{background:#22c55e}
+textarea.note{width:100%;min-height:70px;font:inherit;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.small{font-size:13px;color:var(--muted)}
+.ms{display:none;margin-top:10px}
+.ms.show{display:block}
+.ms label{display:block;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin:6px 0;cursor:pointer}
+.ms input{margin-right:8px}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.rule{background:var(--warn-soft);border-radius:10px;padding:10px 12px;color:var(--ink)}
+.rule b{color:var(--warn)}
+.grid2>*{min-width:0}
+table.grid2d{width:auto;min-width:100%}
+table.grid2d td{text-align:center;font:600 18px "JetBrains Mono",monospace;min-width:64px;height:52px;position:relative;transition:background .15s}
+table.grid2d th{text-align:center;text-transform:none;letter-spacing:0;font-size:13px}
+table.grid2d td.pick{cursor:pointer}
+table.grid2d td.pick:hover{background:var(--brand-soft)}
+table.grid2d td.hit{background:var(--ok-soft);color:var(--ok)}
+table.grid2d td.miss{background:var(--bad-soft);color:var(--bad)}
+table.grid2d td.seen{background:var(--brand-soft)}
+table.grid2d td.now{background:var(--brand);color:#fff}
+table.grid2d td[data-n]::after{content:attr(data-n);position:absolute;top:3px;right:5px;font:600 10px Inter,sans-serif;opacity:.7}
+</style>
+</head>
+<body>
+<header class="hero">
+  <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">◐ Theme</button>
+  <div class="wrap">
+    <span class="tag">IGCSE 0478 · Paper 2</span><span class="tag">60 minutes</span><span class="tag">2D arrays</span>
+    <h1>2D Arrays: Total, Minimum &amp; Maximum</h1>
+    <p>A 2D array is a table: rows and columns. Today you'll point at cells, watch nested loops walk the table, then write 8 runnable exam challenges, from a simple total up to a full 8-mark question.</p>
+  </div>
+</header>
+
+<nav class="steps"><div class="wrap" id="stepNav"></div></nav>
+
+<main class="wrap">
+
+<!-- 1 STARTER -->
+<section class="card" id="s1" data-title="Starter">
+  <div class="sec-head"><div class="num">1</div><h2>Starter: Find the cell</h2><span class="time">5 min</span></div>
+  <p class="lead"><code>Marks[Row, Column]</code>: the first index picks the <b>row</b> (student), the second picks the <b>column</b> (subject). Click the cell the computer asks for. Get 6 in a row correct.</p>
+  <div class="row"><span class="badge" id="gameScore">0 / 6</span><b id="gamePrompt" style="font:600 18px 'JetBrains Mono',monospace"></b></div>
+  <div class="scroll"><table class="grid2d" id="gameGrid"></table></div>
+  <div class="fb" id="gameFb"></div>
+</section>
+
+<!-- 2 LEARN -->
+<section class="card" id="s2" data-title="Learn">
+  <div class="sec-head"><div class="num">2</div><h2>Nested loops: walking the table</h2><span class="time">7 min</span></div>
+  <p class="lead">To visit every cell you need <b>two loops, one inside the other</b>. The outer loop picks a row; the inner loop runs across every column in that row before the outer loop moves on.</p>
+  <div class="grid2">
+    <div>
+<pre class="code" id="vizCode"></pre>
+      <div class="tabs" id="vizMode"><button class="on" data-m="row">Outer loop = rows</button><button data-m="col">Outer loop = columns</button></div>
+      <div class="row"><button class="btn" id="vizStep">Step ▶</button><button class="btn ghost" id="vizAll">Run all</button><button class="btn ghost" id="vizReset">Reset</button></div>
+    </div>
+    <div>
+      <div class="scroll"><table class="grid2d" id="vizGrid"></table></div>
+      <pre class="out" id="vizState" style="margin-top:10px">Press Step to start</pre>
+    </div>
+  </div>
+  <div class="rules" style="margin-top:14px">
+    <div class="rule"><b>Declare:</b> <code>DECLARE Marks : ARRAY[1:4, 1:3] OF INTEGER</code> means 4 rows × 3 columns = 12 elements.</div>
+    <div class="rule"><b>Whole-table total/max/min:</b> set up <b>before both loops</b>, update in the <b>inner</b> loop, output <b>after both loops</b>.</div>
+    <div class="rule"><b>Per-row or per-column:</b> reset <b>inside the outer loop</b>, before the inner loop. Output after the inner loop.</div>
+  </div>
+  <div class="task"><b>Predict:</b> switch to "Outer loop = columns". Which cell is visited 4th? Step through to check.<details style="margin-top:6px"><summary>Show answer</summary><code>Marks[4, 1]</code>: the columns version goes down a whole column first. The total is still 918 either way, because only the order changes.</details></div>
+</section>
+
+<!-- 3 CORE -->
+<section class="card" id="s3" data-title="Core 1–3">
+  <div class="sec-head"><div class="num">3</div><h2>Core: total, maximum, minimum</h2><span class="time">12 min</span></div>
+  <p class="lead">The marks table from the starter is loaded for you (except in Challenge 1, where you write the DECLARE). <b>No mark if your code does not run.</b> The checklist shows what the examiner looks for.</p>
+  <div id="chA"></div>
+</section>
+
+<!-- 4 ROWS & COLUMNS -->
+<section class="card" id="s4" data-title="Rows & cols">
+  <div class="sec-head"><div class="num">4</div><h2>Row and column processing</h2><span class="time">12 min</span></div>
+  <p class="lead">Now the answer is <b>one result per row</b> or <b>one result per column</b>. The key question: <i>where</i> does the reset go?</p>
+  <div id="chB"></div>
+</section>
+
+<!-- 5 APPLY -->
+<section class="card" id="s5" data-title="Count & avg">
+  <div class="sec-head"><div class="num">5</div><h2>Counting and averages</h2><span class="time">8 min</span></div>
+  <div id="chC"></div>
+</section>
+
+<!-- 6 EXAM -->
+<section class="card" id="s6" data-title="Exam Q">
+  <div class="sec-head"><div class="num">6</div><h2>Examination challenge</h2><span class="time">12 min</span></div>
+  <p class="lead">Silent, exam conditions. This one asks for <b>input</b>: the Test inputs box feeds each <code>INPUT</code> in order, 20 marks, one per line, row by row. It is marked against those 20 test marks.</p>
+  <div id="chD"></div>
+</section>
+
+<!-- 7 CHECKLIST -->
+<section class="card" id="s7" data-title="Checklist">
+  <div class="sec-head"><div class="num">7</div><h2>Student exam checklist</h2><span class="time">4 min</span></div>
+  <p class="lead">My revision progress: <b id="clCount">0/8 completed</b>. Tick only what you could do in an exam without help.</p>
+  <div id="checklist"></div>
+  <p style="margin-top:14px"><b>One thing I still find tricky:</b></p>
+  <textarea class="note" id="reflectNote" placeholder="e.g. where to reset the row total…"></textarea>
+  <div class="row"><button class="btn" id="copySummary">Copy my lesson summary for my teacher</button></div>
+  <div class="fb" id="sumFb"></div>
+</section>
+</main>
+
+<script>
+
+/* ================= Cambridge 0478 pseudocode interpreter (with test inputs) ================= */
+const BUILTINS = {
+  ROUND:(x,n)=>{n=n||0;const f=Math.pow(10,n);return Math.round(x*f)/f;},
+  LENGTH:s=>String(s).length, UCASE:s=>String(s).toUpperCase(), LCASE:s=>String(s).toLowerCase(),
+  SUBSTRING:(s,a,l)=>String(s).substr(a-1,l), INT:x=>Math.trunc(x), RANDOM:()=>Math.random(),
+  DIV:(a,b)=>Math.trunc(a/b), MOD:(a,b)=>a%b
+};
+function transpile(src){
+  const vars=new Set(), types={}, body=[], warnings=[];
+  const lines=src.replace(/\r/g,'').split('\n');
+  lines.forEach((raw,n)=>{
+    const strs=[];
+    let line=raw.replace(/"[^"]*"|'[^']*'/g,m=>{strs.push(m);return '§'+(strs.length-1)+'§';});
+    line=line.replace(/\/\/.*$/,'').trim();
+    if(!line) return;
+    const L='Line '+(n+1)+': ';
+    if(/^(try|except)\b/.test(line)) throw new Error(L+'try/except is Python. In 0478, check each character with SUBSTRING instead.');
+    if(/\.\s*(strip|isdigit|isnumeric|isalpha|upper|lower|append)\s*\(/.test(line)) throw new Error(L+'that is a Python method. Use 0478 functions: LENGTH, SUBSTRING, UCASE, LCASE.');
+    if(/^(for|if|while|def|elif|else)\b.*:\s*$/.test(line) || /^print\s*\(/.test(line))
+      throw new Error(L+'this looks like Python. Write it in 0478 pseudocode (e.g. FOR … NEXT, IF … THEN … ENDIF, OUTPUT).');
+    if(/==/.test(line)) warnings.push(L+'Paper 2 uses = for comparison, not ==.');
+    const restore=s=>s.replace(/§(\d+)§/g,(_,i)=>strs[+i]);
+    const idx=s=>s.replace(/\[([^\[\]]+?),([^\[\]]+?)\]/g,'[$1][$2]');
+    const E=e=>{
+      e=idx(e);
+      e=e.replace(/<>/g,' != ').replace(/([^<>!=])=(?!=)/g,'$1 == ');
+      e=e.replace(/\bAND\b/g,' && ').replace(/\bOR\b/g,' || ').replace(/\bNOT\b/g,' !')
+         .replace(/\bTRUE\b/g,'true').replace(/\bFALSE\b/g,'false');
+      const term='([\\w.]+(?:\\[[^\\]]*\\])*|\\([^()]*\\))';
+      e=e.replace(new RegExp(term+'\\s+DIV\\s+'+term,'g'),'DIV($1,$2)')
+         .replace(new RegExp(term+'\\s+MOD\\s+'+term,'g'),'MOD($1,$2)');
+      return e;
+    };
+    let m, js;
+    if(m=line.match(/^DECLARE\s+(.+?)\s*:\s*(.+)$/i)){
+      const isArr=/^ARRAY/i.test(m[2]); const dims=(m[2].match(/\[(.*?)\]/)||['',''])[1];
+      const ty=(m[2].match(/(INTEGER|REAL|STRING|CHAR|BOOLEAN|DATE)\s*$/i)||['',''])[1].toUpperCase();
+      js=m[1].split(',').map(s=>s.trim()).map(nm=>{vars.add(nm);types[nm]=ty;return nm+(isArr?(dims.includes(',')?'=__arr2();':'={};'):'=undefined;');}).join('');
+    } else if(m=line.match(/^CONSTANT\s+(\w+)\s*(?:←|<-|=)\s*(.+)$/i)){ vars.add(m[1]); js=m[1]+'='+E(m[2])+';'; }
+    else if(m=line.match(/^FOR\s+(\w+)\s*(?:←|<-)\s*(.+?)\s+TO\s+(.+?)(?:\s+STEP\s+(.+))?$/i)){
+      const v=m[1]; vars.add(v); vars.add('__s'+n); vars.add('__e'+n);
+      js=`for(${v}=(${E(m[2])}),__s${n}=(${m[4]?E(m[4]):1}),__e${n}=(${E(m[3])});__s${n}>0?${v}<=__e${n}:${v}>=__e${n};${v}+=__s${n}){__g();`;
+    }
+    else if(/^NEXT\b/i.test(line)) js='}';
+    else if(m=line.match(/^IF\s+(.+?)(?:\s+THEN)?$/i)) js='if('+E(m[1])+'){';
+    else if(/^THEN$/i.test(line)) js='';
+    else if(/^ELSE$/i.test(line)) js='}else{';
+    else if(/^ENDIF$/i.test(line)) js='}';
+    else if(m=line.match(/^WHILE\s+(.+?)(?:\s+DO)?$/i)) js='while('+E(m[1])+'){__g();';
+    else if(/^ENDWHILE$/i.test(line)) js='}';
+    else if(/^REPEAT$/i.test(line)) js='do{__g();';
+    else if(m=line.match(/^UNTIL\s+(.+)$/i)) js='}while(!('+E(m[1])+'));';
+    else if(m=line.match(/^(?:OUTPUT|PRINT)\s+(.+)$/i)) js='__out('+E(m[1])+');';
+    else if(m=line.match(/^INPUT\s+(.+)$/i)){ const t=idx(m[1].trim()); const base=t.split('[')[0]; if(/^\w+$/.test(t)) vars.add(t);
+      js=t+'=__in("'+t+'","'+(types[base]||'')+'");'; }
+    else if(m=line.match(/^(.+?)\s*(?:←|<-)\s*(.+)$/)){ const t=idx(m[1].trim()); let pre='';
+      if(/^\w+$/.test(t)) vars.add(t);
+      else { const b=(t.match(/^(\w+)\[/)||[])[1]; if(b&&!vars.has(b)){ vars.add(b); pre='if(typeof '+b+'!=="object"||'+b+'===null)'+b+'={};'; } }
+      js=pre+t+'='+E(m[2])+';'; }
+    else throw new Error(L+'I don\'t understand "'+raw.trim()+'"');
+    body.push(restore(js));
+  });
+  return {code:(vars.size?'var '+[...vars].join(',')+';':'')+body.join('\n'), warnings};
+}
+function runPseudo(src, inputs){
+  const out=[], queue=(inputs||[]).slice(); let t;
+  try{ t=transpile(src); }catch(e){ return {ok:false,out:'',err:e.message,warnings:[]}; }
+  const fmt=v=>v===true?'TRUE':v===false?'FALSE':v===undefined?'(no value)':String(v);
+  const __out=(...a)=>out.push(a.map(fmt).join(''));
+  const __in=(name,type)=>{
+    if(!queue.length) throw new Error('INPUT '+name+' ran but there are no more test inputs — add another line to the Test inputs box.');
+    const v=queue.shift(); out.push('> '+(v===''?'(blank)':v));
+    if(type==='INTEGER'){ if(!/^\s*-?\d+\s*$/.test(v)) throw new Error('Type error: "'+v+'" is not an INTEGER. A real program would crash here — exactly what a type check is for.'); return parseInt(v,10); }
+    if(type==='REAL'){ if(v.trim()===''||isNaN(v)) throw new Error('Type error: "'+v+'" is not a REAL number.'); return Number(v); }
+    if(type==='STRING'||type==='CHAR') return v;
+    return (v.trim()!==''&&!isNaN(v))?Number(v):v;
+  };
+  const __arr2=()=>new Proxy({},{get:(o,k)=>(k in o)?o[k]:(o[k]={})});
+  let c=0; const __g=()=>{ if(++c>200000) throw new Error('Your loop ran more than 200,000 times — check the loop condition.'); };
+  try{
+    const names=Object.keys(BUILTINS);
+    new Function('__out','__in','__arr2','__g',...names,t.code)(__out,__in,__arr2,__g,...names.map(k=>BUILTINS[k]));
+  }catch(e){
+    let msg=e.message;
+    if(e instanceof SyntaxError) msg='Structure error — check every FOR has a NEXT, every IF has an ENDIF, every REPEAT has an UNTIL and every WHILE has an ENDWHILE.';
+    else if(e instanceof TypeError&&/undefined|null/.test(msg)) msg='An array was used before it was declared, or an index is outside its bounds. Check your DECLARE line and the loop limits.';
+    else if(e instanceof ReferenceError) msg='A variable or function is used before it exists: '+e.message.replace(' is not defined','')+' (check spelling and capital letters).';
+    return {ok:false,out:out.join('\n'),err:msg,warnings:t.warnings,left:queue.length};
+  }
+  const o=out.join('\n');
+  if(/NaN|\(no value\)/.test(o)) t.warnings.push('A variable was used before it was given a value — did you forget to initialise it?');
+  return {ok:true,out:o,err:null,warnings:t.warnings,left:queue.length};
+}
+
+/* ================= Helpers ================= */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function fb(el,type,html){el.className='fb show '+type; el.innerHTML=html;}
+const store={get(k,d){try{const v=localStorage.getItem('a2d0478_'+k);return v===null?d:JSON.parse(v);}catch(e){return d;}},
+             set(k,v){try{localStorage.setItem('a2d0478_'+k,JSON.stringify(v));}catch(e){}}};
+const norm=s=>String(s).trim().split('\n').map(x=>x.trim()).join('\n');
+function tabKey(e){
+  if(e.key==='Tab'){e.preventDefault();const t=e.target,s=t.selectionStart;
+    t.value=t.value.slice(0,s)+'   '+t.value.slice(t.selectionEnd);t.selectionStart=t.selectionEnd=s+3;}
+}
+function makeRunner(host,{start,expect,onRun,key,inputs}){
+  const hasIn=inputs!==undefined;
+  host.innerHTML=`<div class="${hasIn?'rgrid':''}"><textarea class="code" spellcheck="false"></textarea>
+    ${hasIn?'<div><div class="small" style="margin-bottom:4px"><b>Test inputs</b> (one per line)</div><textarea class="inputs" spellcheck="false"></textarea></div>':''}</div>
+    <div class="row"><button class="btn run">▶ Run</button><button class="btn ghost reset">Reset</button>
+    ${expect!==undefined?`<span class="small">Expected output: <code>${esc(expect).replace(/\n/g,' ↵ ')}</code></span>`:''}</div>
+    <pre class="out">Output appears here</pre><div class="fb"></div>`;
+  const ta=host.querySelector('textarea.code'), it=host.querySelector('textarea.inputs'), out=host.querySelector('.out'), f=host.querySelector('.fb');
+  ta.value=key?store.get('code_'+key,start):start;
+  if(it) it.value=inputs;
+  ta.addEventListener('keydown',tabKey);
+  ta.addEventListener('input',()=>key&&store.set('code_'+key,ta.value));
+  host.querySelector('.reset').onclick=()=>{ta.value=start;if(it)it.value=inputs;key&&store.set('code_'+key,start);out.textContent='Output appears here';f.className='fb';};
+  host.querySelector('.run').onclick=()=>{
+    const ins=it&&it.value.length?it.value.replace(/\r/g,'').split('\n'):[];
+    const r=runPseudo(ta.value,ins);
+    out.textContent=((r.out||'')+(r.err?'\n⚠ '+r.err:'')).trim() || '(no output — did you forget OUTPUT?)';
+    const correct=r.ok && expect!==undefined && norm(r.out)===norm(expect);
+    const w=r.warnings.length?'<br>'+r.warnings.map(esc).join('<br>'):'';
+    if(!r.ok) fb(f,'bad','✗ Your code did not run, so it would score 0. '+esc(r.err)+w);
+    else if(expect===undefined) w?fb(f,'warn',w.slice(4)):(f.className='fb');
+    else if(correct) fb(f,'ok','✓ Runs and gives the correct output.'+w);
+    else fb(f,'warn','Runs, but the output doesn\'t match the expected output yet.'+w);
+    onRun&&onRun(r,correct,ta.value,ins);
+  };
+}
+
+
+
+/* ================= Progress nav ================= */
+const sections=[...document.querySelectorAll('section.card')];
+const done=store.get('done',{});
+function drawNav(){$('#stepNav').innerHTML=sections.map((s,i)=>`<a href="#${s.id}" class="${done[s.id]?'done':''}">${i+1}. ${s.dataset.title}</a>`).join('');}
+function markDone(id){done[id]=true;store.set('done',done);drawNav();}
+drawNav();
+
+const M=[[78,85,90],[65,72,88],[92,80,75],[55,68,70]], SUBJ=['Maths','English','Science'];
+function drawGrid(el,cls){
+  el.innerHTML='<thead><tr><th></th>'+SUBJ.map((s,c)=>`<th>Col ${c+1}<br><span class="small">${s}</span></th>`).join('')+'</tr></thead><tbody>'+
+   M.map((r,ri)=>`<tr><th>Row ${ri+1}<br><span class="small">Student ${ri+1}</span></th>`+r.map((v,ci)=>`<td class="${cls||''}" data-r="${ri+1}" data-c="${ci+1}">${v}</td>`).join('')+'</tr>').join('')+'</tbody>';
+}
+
+/* ================= 1 Starter game ================= */
+drawGrid($('#gameGrid'),'pick');
+let streak=0,target=null;
+function newTarget(){let r,c;do{r=1+Math.floor(Math.random()*4);c=1+Math.floor(Math.random()*3);}while(target&&target[0]===r&&target[1]===c);target=[r,c];
+  $('#gamePrompt').textContent=`Click Marks[${r}, ${c}]`;}
+newTarget();
+document.querySelectorAll('#gameGrid td').forEach(td=>td.onclick=()=>{
+  const r=+td.dataset.r,c=+td.dataset.c;
+  document.querySelectorAll('#gameGrid td').forEach(x=>x.classList.remove('hit','miss'));
+  if(r===target[0]&&c===target[1]){streak++;td.classList.add('hit');fb($('#gameFb'),'ok',`✓ Marks[${r}, ${c}] = ${M[r-1][c-1]} (Student ${r}, ${SUBJ[c-1]})`);}
+  else{streak=0;td.classList.add('miss');fb($('#gameFb'),'bad',`✗ That's Marks[${r}, ${c}]: row ${r}, column ${c}. Row first, then column. Streak reset.`);}
+  $('#gameScore').textContent=Math.min(streak,6)+' / 6';
+  if(streak>=6){fb($('#gameFb'),'ok','🎉 Six in a row! Row first, column second. You\'re ready.');markDone('s1');}
+  newTarget();
+});
+
+/* ================= 2 Visualiser ================= */
+drawGrid($('#vizGrid'));
+let vMode='row',vSteps=[],vi=0;
+const vCode={row:`Total ← 0
+FOR Row ← 1 TO 4
+    FOR Col ← 1 TO 3
+        Total ← Total + Marks[Row, Col]
+    NEXT Col
+NEXT Row
+OUTPUT Total`,col:`Total ← 0
+FOR Col ← 1 TO 3
+    FOR Row ← 1 TO 4
+        Total ← Total + Marks[Row, Col]
+    NEXT Row
+NEXT Col
+OUTPUT Total`};
+function vBuild(){vSteps=[];let t=0;
+  if(vMode==='row'){for(let r=1;r<=4;r++)for(let c=1;c<=3;c++){t+=M[r-1][c-1];vSteps.push([r,c,t]);}}
+  else{for(let c=1;c<=3;c++)for(let r=1;r<=4;r++){t+=M[r-1][c-1];vSteps.push([r,c,t]);}}
+  vi=0;$('#vizCode').textContent=vCode[vMode];
+  document.querySelectorAll('#vizGrid td').forEach(x=>{x.className='';x.removeAttribute('data-n');});
+  $('#vizState').textContent='Press Step to start';}
+function vShow(){
+  document.querySelectorAll('#vizGrid td').forEach(x=>x.classList.remove('now'));
+  for(let k=0;k<vi;k++){const [r,c]=vSteps[k];const td=document.querySelector(`#vizGrid td[data-r="${r}"][data-c="${c}"]`);td.classList.add('seen');td.dataset.n=k+1;}
+  if(vi===0) return;
+  const [r,c,t]=vSteps[vi-1], td=document.querySelector(`#vizGrid td[data-r="${r}"][data-c="${c}"]`); td.classList.add('now');
+  $('#vizState').textContent=`Step ${vi} of 12\nRow = ${r}   Col = ${c}\nMarks[${r}, ${c}] = ${M[r-1][c-1]}\nTotal = ${t}`+(vi===12?'\n\nBoth loops finished → OUTPUT Total → 918':'');
+  if(vi===12) markDone('s2');
+}
+$('#vizStep').onclick=()=>{if(vi<12){vi++;vShow();}};
+$('#vizAll').onclick=()=>{vi=12;vShow();};
+$('#vizReset').onclick=vBuild;
+document.querySelectorAll('#vizMode button').forEach(b=>b.onclick=()=>{vMode=b.dataset.m;document.querySelectorAll('#vizMode button').forEach(x=>x.classList.toggle('on',x===b));vBuild();});
+vBuild();
+
+/* ================= Challenges ================= */
+const DATA=`Marks[1, 1] ← 78
+Marks[1, 2] ← 85
+Marks[1, 3] ← 90
+Marks[2, 1] ← 65
+Marks[2, 2] ← 72
+Marks[2, 3] ← 88
+Marks[3, 1] ← 92
+Marks[3, 2] ← 80
+Marks[3, 3] ← 75
+Marks[4, 1] ← 55
+Marks[4, 2] ← 68
+Marks[4, 3] ← 70
+`;
+const DECL='DECLARE Marks : ARRAY[1:4, 1:3] OF INTEGER\nDECLARE Row : INTEGER\nDECLARE Col : INTEGER\n';
+const after=c=>c.split('// Your code below')[1]||c;
+const nested=c=>(after(c).match(/^\s*FOR\b/gim)||[]).length>=2;
+const C8IN=['45','67','89','72','90','38','66','81','55','74','60','99','23','88','71','64','80','59','47','92'];
+const numsInOrder=(out,nums)=>{const lines=out.split('\n').filter(l=>!l.startsWith('> '));let k=0;
+  for(const l of lines){if(k<nums.length&&new RegExp('(^|[^\\d.])'+nums[k].replace('.','\\.')+'(?![\\d])').test(l))k++;}return k===nums.length;};
+const CH=[
+ {grp:'chA',n:1,t:'Calculate the total',marks:4,brief:'Declare <code>Marks</code> as a 2D array (4 students × 3 subjects). Initialise <code>Total</code> to 0, use nested FOR loops to add every mark, then OUTPUT the total.',
+  start:`// 1. Declare Marks as a 2D array here
+
+`+DATA+`// Your code below
+`,expect:'918',
+  checks:[['DECLARE Marks : ARRAY[1:4, 1:3] OF INTEGER',c=>/DECLARE\s+Marks\s*:\s*ARRAY\s*\[\s*1\s*:\s*4\s*,\s*1\s*:\s*3\s*\]\s*OF\s+INTEGER/i.test(c)],
+          ['Total ← 0 before the loops',c=>/Total\s*(←|<-)\s*0\s*$/m.test(c)],
+          ['Nested FOR loops with Total ← Total + Marks[Row, Col]',c=>nested(c)&&/Total\s*(←|<-)\s*Total\s*\+\s*Marks\[\s*\w+\s*,\s*\w+\s*\]/.test(c)]],
+  model:`DECLARE Marks : ARRAY[1:4, 1:3] OF INTEGER
+DECLARE Total : INTEGER
+DECLARE Row : INTEGER
+DECLARE Col : INTEGER
+// (data assignments here)
+Total ← 0
+FOR Row ← 1 TO 4
+    FOR Col ← 1 TO 3
+        Total ← Total + Marks[Row, Col]
+    NEXT Col
+NEXT Row
+OUTPUT Total`},
+ {grp:'chA',n:2,t:'Find the highest mark',marks:4,brief:'Initialise <code>Maximum</code> using the first element, examine every element with nested FOR loops, update when an element is greater, then OUTPUT the highest mark.',
+  start:DECL+'DECLARE Maximum : INTEGER\n'+DATA+'// Your code below\n',expect:'92',
+  checks:[['Maximum ← Marks[1, 1] (the first element, not 0)',c=>/Maximum\s*(←|<-)\s*Marks\[\s*1\s*,\s*1\s*\]/.test(c)],
+          ['Nested FOR loops visit every element',c=>nested(c)],
+          ['IF Marks[Row, Col] > Maximum THEN update',c=>/IF\s+Marks\[[^\]]+\]\s*>\s*Maximum|IF\s+Maximum\s*<\s*Marks\[/i.test(c)]],
+  model:`Maximum ← Marks[1, 1]
+FOR Row ← 1 TO 4
+    FOR Col ← 1 TO 3
+        IF Marks[Row, Col] > Maximum
+            THEN
+                Maximum ← Marks[Row, Col]
+        ENDIF
+    NEXT Col
+NEXT Row
+OUTPUT Maximum`},
+ {grp:'chA',n:3,t:'Find the lowest mark',marks:4,brief:'Initialise <code>Minimum</code> using the first element, examine every element, update when an element is less, then OUTPUT the lowest mark.',
+  start:DECL+'DECLARE Minimum : INTEGER\n'+DATA+'// Your code below\n',expect:'55',
+  checks:[['Minimum ← Marks[1, 1] (not 0, and not 100)',c=>/Minimum\s*(←|<-)\s*Marks\[\s*1\s*,\s*1\s*\]/.test(c)],
+          ['Nested FOR loops visit every element',c=>nested(c)],
+          ['IF Marks[Row, Col] < Minimum THEN update',c=>/IF\s+Marks\[[^\]]+\]\s*<\s*Minimum|IF\s+Minimum\s*>\s*Marks\[/i.test(c)]],
+  model:`Minimum ← Marks[1, 1]
+FOR Row ← 1 TO 4
+    FOR Col ← 1 TO 3
+        IF Marks[Row, Col] < Minimum
+            THEN
+                Minimum ← Marks[Row, Col]
+        ENDIF
+    NEXT Col
+NEXT Row
+OUTPUT Minimum`},
+ {grp:'chB',n:4,t:'Total for each student',marks:5,brief:'Calculate and output the total marks for each student separately, in the format <code>Student 1: 253</code>. <b>Hint:</b> initialise <code>StudentTotal</code> to 0 inside the outer FOR loop, before the inner FOR loop starts.',
+  start:DECL+'DECLARE StudentTotal : INTEGER\n'+DATA+'// Your code below\n',expect:'Student 1: 253\nStudent 2: 225\nStudent 3: 247\nStudent 4: 193',
+  checks:[['StudentTotal ← 0 inside the outer loop, before the inner loop',c=>{const a=after(c),f1=a.search(/^\s*FOR\b/im),z=a.search(/StudentTotal\s*(←|<-)\s*0/),rest=a.slice(f1+3),f2=f1+3+rest.search(/^\s*FOR\b/im);return f1>=0&&z>f1&&f2>z;}],
+          ['Inner loop adds Marks[Row, Col] for the columns',c=>/StudentTotal\s*(←|<-)\s*StudentTotal\s*\+\s*Marks\[\s*\w+\s*,\s*\w+\s*\]/.test(c)],
+          ['OUTPUT after the inner loop, inside the outer loop (one line per student)',(c,r)=>r.ok&&norm(r.out).split('\n').length===4]],
+  model:`FOR Row ← 1 TO 4
+    StudentTotal ← 0
+    FOR Col ← 1 TO 3
+        StudentTotal ← StudentTotal + Marks[Row, Col]
+    NEXT Col
+    OUTPUT "Student ", Row, ": ", StudentTotal
+NEXT Row`},
+ {grp:'chB',n:5,t:'Highest mark in each subject',marks:6,brief:'Find the highest mark in each subject and output it as <code>Maths: 92</code>. The subject names are in <code>Subjects[1:3]</code>. <b>Hint:</b> this time the outer loop controls the subject (column) and the inner loop examines the students (rows).',
+  start:DECL+'DECLARE Subjects : ARRAY[1:3] OF STRING\nDECLARE Highest : INTEGER\nSubjects[1] ← "Maths"\nSubjects[2] ← "English"\nSubjects[3] ← "Science"\n'+DATA+'// Your code below\n',expect:'Maths: 92\nEnglish: 85\nScience: 90',
+  checks:[['Outer loop controls the column (subject)',c=>{const m=after(c).match(/^\s*FOR\s+(\w+)\s*(←|<-)\s*1\s+TO\s+(\d+)/im);return !!m&&m[3]==='3'&&new RegExp('Marks\\[\\s*\\w+\\s*,\\s*'+m[1]+'\\s*\\]').test(c);}],
+          ['Highest reset from the first row of that column: Highest ← Marks[1, Col]',c=>/Highest\s*(←|<-)\s*Marks\[\s*1\s*,\s*\w+\s*\]/.test(c)],
+          ['IF Marks[Row, Col] > Highest THEN update',c=>/IF\s+Marks\[[^\]]+\]\s*>\s*Highest/i.test(c)],
+          ['OUTPUT Subjects[Col], ": ", Highest after the inner loop',(c,r)=>r.ok&&/Subjects\[/.test(c)&&norm(r.out).split('\n').length===3]],
+  model:`FOR Col ← 1 TO 3
+    Highest ← Marks[1, Col]
+    FOR Row ← 2 TO 4
+        IF Marks[Row, Col] > Highest
+            THEN
+                Highest ← Marks[Row, Col]
+        ENDIF
+    NEXT Row
+    OUTPUT Subjects[Col], ": ", Highest
+NEXT Col`},
+ {grp:'chC',n:6,t:'Count students who passed',marks:6,brief:'A mark of <b>50 or above</b> is a pass. Examine every element, count how many marks are 50 or above and how many are below 50, then output both counts as <code>Passed: 12</code> and <code>Failed: 0</code>.',
+  start:DECL+'DECLARE Passed : INTEGER\nDECLARE Failed : INTEGER\n'+DATA+'// Your code below\n',expect:'Passed: 12\nFailed: 0',
+  checks:[['Both counters start at 0',c=>/Passed\s*(←|<-)\s*0/.test(c)&&/Failed\s*(←|<-)\s*0/.test(c)],
+          ['Nested FOR loops visit every element',c=>nested(c)],
+          ['IF Marks[Row, Col] >= 50 (50 itself is a pass)',c=>/>=\s*50|<\s*50/.test(c)],
+          ['ELSE (or second IF) increments Failed',c=>/Failed\s*(←|<-)\s*Failed\s*\+\s*1/.test(c)]],
+  model:`Passed ← 0
+Failed ← 0
+FOR Row ← 1 TO 4
+    FOR Col ← 1 TO 3
+        IF Marks[Row, Col] >= 50
+            THEN
+                Passed ← Passed + 1
+            ELSE
+                Failed ← Failed + 1
+        ENDIF
+    NEXT Col
+NEXT Row
+OUTPUT "Passed: ", Passed
+OUTPUT "Failed: ", Failed`},
+ {grp:'chC',n:7,t:'Calculate the class average',marks:5,brief:'Calculate the total of all marks, count the number of elements, calculate the average and output it rounded to 2 decimal places, as <code>Average: 76.5</code>. (<code>ROUND(76.5, 2)</code> is the number 76.5, which 0478 outputs as 76.5, not 76.50.)',
+  start:DECL+'DECLARE Total : INTEGER\nDECLARE Count : INTEGER\nDECLARE Average : REAL\n'+DATA+'// Your code below\n',expect:'Average: 76.5',
+  checks:[['Total and Count start at 0',c=>/Total\s*(←|<-)\s*0/.test(c)&&/Count\s*(←|<-)\s*0/.test(c)],
+          ['Count increases by 1 for every element (not a typed-in 12)',c=>/Count\s*(←|<-)\s*Count\s*\+\s*1/.test(c)],
+          ['Average ← Total / Count after the loops',c=>/Average\s*(←|<-)\s*Total\s*\/\s*Count/.test(c)],
+          ['ROUND(Average, 2)',c=>/ROUND\s*\(\s*\w+\s*,\s*2\s*\)/i.test(c)]],
+  model:`Total ← 0
+Count ← 0
+FOR Row ← 1 TO 4
+    FOR Col ← 1 TO 3
+        Total ← Total + Marks[Row, Col]
+        Count ← Count + 1
+    NEXT Col
+NEXT Row
+Average ← Total / Count
+OUTPUT "Average: ", ROUND(Average, 2)`},
+ {grp:'chD',n:8,t:'Examination challenge',marks:8,brief:'A school stores marks for 5 students in 4 subjects: <code>DECLARE Marks : ARRAY[1:5, 1:4] OF INTEGER</code>. Write a complete solution to: (1) input all 20 marks; (2) calculate the total marks for the entire class; (3) find the highest mark; (4) find the lowest mark; (5) output the class average. Use nested FOR loops. Output the total, highest, lowest and average <b>in that order</b>, each with a clear message.',
+  start:`DECLARE Marks : ARRAY[1:5, 1:4] OF INTEGER
+// Your code below
+`,inputs:C8IN.join('\n'),
+  match:out=>numsInOrder(out,['1360','99','23','68']),expectText:'total 1360, highest 99, lowest 23, average 68 (with your messages)',
+  checks:[['Nested FOR loops with INPUT Marks[Row, Col] (with a prompt)',c=>nested(c)&&/INPUT\s+Marks\[\s*\w+\s*,\s*\w+\s*\]/i.test(c)],
+          ['Total starts at 0 and adds every element',c=>/(\w+)\s*(←|<-)\s*\1\s*\+\s*Marks\[/.test(c)],
+          ['Highest and lowest start from Marks[1, 1] after the input',c=>{const a=after(c),i=a.search(/INPUT/i);return (a.slice(i).match(/(←|<-)\s*Marks\[\s*1\s*,\s*1\s*\]/g)||[]).length>=2;}],
+          ['Both comparisons > and < in the loops',c=>{const a=after(c).replace(/<-/g,'');return /IF[^\n]*>/.test(a)&&/IF[^\n]*</.test(a);}],
+          ['Average = total ÷ 20 (or a count) using /',c=>/\/\s*(20|\w+)/.test(after(c))],
+          ['At least two clear output messages',c=>(after(c).match(/OUTPUT\s+"/gi)||[]).length>=2]],
+  model:`DECLARE Marks : ARRAY[1:5, 1:4] OF INTEGER
+DECLARE Row : INTEGER
+DECLARE Col : INTEGER
+DECLARE Total : INTEGER
+DECLARE Highest : INTEGER
+DECLARE Lowest : INTEGER
+DECLARE Average : REAL
+// 1. Input all 20 marks
+FOR Row ← 1 TO 5
+    FOR Col ← 1 TO 4
+        OUTPUT "Enter mark for student ", Row, ", subject ", Col
+        INPUT Marks[Row, Col]
+    NEXT Col
+NEXT Row
+// 2-4. Total, highest and lowest in one pass
+Total ← 0
+Highest ← Marks[1, 1]
+Lowest ← Marks[1, 1]
+FOR Row ← 1 TO 5
+    FOR Col ← 1 TO 4
+        Total ← Total + Marks[Row, Col]
+        IF Marks[Row, Col] > Highest
+            THEN
+                Highest ← Marks[Row, Col]
+        ENDIF
+        IF Marks[Row, Col] < Lowest
+            THEN
+                Lowest ← Marks[Row, Col]
+        ENDIF
+    NEXT Col
+NEXT Row
+// 5. Average
+Average ← Total / 20
+OUTPUT "Total marks for the class: ", Total
+OUTPUT "Highest mark: ", Highest
+OUTPUT "Lowest mark: ", Lowest
+OUTPUT "Class average: ", Average`}
+];
+const chalDone=store.get('chal',{});
+const groupDone={chA:[1,2,3],chB:[4,5],chC:[6,7],chD:[8]}, groupSec={chA:'s3',chB:'s4',chC:'s5',chD:'s6'};
+CH.forEach(c=>{
+  const id='ch'+c.n;
+  $('#'+c.grp).insertAdjacentHTML('beforeend',`<div class="chal" id="${id}">
+  <div class="row" style="margin:0"><h3>Challenge ${c.n}: ${c.t}</h3><span class="badge">${c.marks} marks</span></div>
+  <p style="margin:6px 0 10px">${c.brief}</p>
+  <div class="${c.inputs?'rgrid':''}"><textarea class="code" spellcheck="false"></textarea>
+   ${c.inputs?'<div><div class="small" style="margin-bottom:4px"><b>Test inputs</b> (one per line)</div><textarea class="inputs" spellcheck="false"></textarea></div>':''}</div>
+  <div class="row"><button class="btn run">▶ Run</button><button class="btn ghost reset">Reset</button>
+   <span class="small">Expected output: <code>${c.expect?esc(c.expect).replace(/\n/g,' ↵ '):c.expectText}</code></span></div>
+  <pre class="out">Output appears here</pre><div class="fb"></div>
+  <b>Examiner checklist</b> <span class="small" data-score></span>
+  <ul class="checks"><li data-k="run">Runs and gives the correct output (no mark if it does not run)</li>${c.checks.map((k,j)=>`<li data-k="${j}">${k[0]}</li>`).join('')}</ul>
+  <div class="row"><button class="btn ghost showModel" disabled>Show model answer</button><span class="small">unlocks after you run your code</span></div>
+  <div class="model"><pre class="code">${esc(c.model)}</pre></div></div>`);
+  const box=document.getElementById(id), ta=box.querySelector('textarea.code'), it=box.querySelector('textarea.inputs'),
+        out=box.querySelector('.out'), f=box.querySelector('.fb'), btn=box.querySelector('.showModel');
+  ta.value=store.get('code_'+id,c.start); if(it) it.value=c.inputs;
+  ta.addEventListener('keydown',tabKey); ta.addEventListener('input',()=>store.set('code_'+id,ta.value));
+  box.querySelector('.reset').onclick=()=>{ta.value=c.start;if(it)it.value=c.inputs;store.set('code_'+id,c.start);out.textContent='Output appears here';f.className='fb';box.querySelectorAll('.checks li').forEach(l=>l.className='');};
+  box.querySelector('.run').onclick=()=>{
+    const ins=it&&it.value.length?it.value.replace(/\r/g,'').split('\n'):[];
+    const r=runPseudo(ta.value,ins);
+    out.textContent=((r.out||'')+(r.err?'\n⚠ '+r.err:'')).trim()||'(no output — did you forget OUTPUT?)';
+    const rm=c.inputs?runPseudo(ta.value,c.inputs.split('\n')):r;
+    const ok=rm.ok&&(c.match?c.match(rm.out):norm(rm.out)===norm(c.expect));
+    const w=r.warnings.length?'<br>'+r.warnings.map(esc).join('<br>'):'';
+    btn.disabled=false;
+    box.querySelector('[data-k="run"]').className=ok?'y':'n';
+    let met=ok?1:0;
+    c.checks.forEach((k,j)=>{const y=rm.ok&&!!k[1](ta.value,rm);met+=y;box.querySelector(`[data-k="${j}"]`).className=y?'y':'n';});
+    const score=rm.ok?Math.round(c.marks*met/(c.checks.length+1)):0;
+    box.querySelector('[data-score]').textContent=`— ${score}/${c.marks}`;
+    if(!r.ok) fb(f,'bad','✗ Your code did not run, so it would score 0. '+esc(r.err)+w);
+    else if(ok) fb(f,'ok',`✓ Runs and gives the correct output. ${score}/${c.marks}.`+w);
+    else fb(f,'warn','Runs, but the output doesn\'t match yet.'+(c.inputs&&ins.join()!==c.inputs.split('\n').join()?' (Marking always uses the original 20 test marks.)':'')+w);
+    chalDone[c.n]=Math.max(chalDone[c.n]||0,score);store.set('chal',chalDone);
+    Object.keys(groupDone).forEach(g=>{if(groupDone[g].every(n=>(chalDone[n]||0)>=Math.ceil(CH[n-1].marks*0.75)))markDone(groupSec[g]);});
+  };
+  btn.onclick=()=>box.querySelector('.model').classList.toggle('show');
+});
+
+/* ================= 7 Checklist ================= */
+const CL=['I can declare a 2D array.','I understand row and column indexes.','I can use nested FOR loops.','I can calculate a total using an accumulator.',
+ 'I can find the maximum and minimum.','I can calculate row totals and column totals.','I can use counters and IF statements.','I can combine algorithms in one program.'];
+const cl=store.get('cl',{});
+$('#checklist').innerHTML=CL.map((t,i)=>`<label class="opt"><input type="checkbox" data-i="${i}" ${cl[i]?'checked':''}>${t}</label>`).join('');
+function clDraw(){const n=CL.filter((_,i)=>cl[i]).length;$('#clCount').textContent=n+'/8 completed';if(n===8)markDone('s7');}
+document.querySelectorAll('#checklist input').forEach(cb=>cb.onchange=()=>{cl[cb.dataset.i]=cb.checked;store.set('cl',cl);clDraw();});
+clDraw();
+$('#reflectNote').value=store.get('reflect','');$('#reflectNote').oninput=e=>store.set('reflect',e.target.value);
+$('#copySummary').onclick=()=>{
+  const tot=CH.reduce((s,c)=>s+(chalDone[c.n]||0),0), max=CH.reduce((s,c)=>s+c.marks,0);
+  const txt=`2D Arrays – Total, Minimum and Maximum (0478) – lesson summary
+Challenges: ${CH.map(c=>`C${c.n} ${chalDone[c.n]||0}/${c.marks}`).join(', ')}
+Total: ${tot}/${max}
+Checklist: ${CL.filter((_,i)=>cl[i]).length}/8 ticked${CL.some((_,i)=>!cl[i])?' (not yet: '+CL.filter((_,i)=>!cl[i]).map(s=>s.replace(/^I (can |understand )/,'').replace(/\.$/,'')).join('; ')+')':''}
+Still tricky: ${$('#reflectNote').value||'-'}`;
+  const ok=()=>fb($('#sumFb'),'ok','Copied — paste it where your teacher asks.');
+  (navigator.clipboard?navigator.clipboard.writeText(txt).then(ok):Promise.reject()).catch(()=>fb($('#sumFb'),'warn','<pre style="white-space:pre-wrap;margin:0">'+esc(txt)+'</pre>'));
+};
+
+$('#themeBtn').onclick=()=>{const r=document.documentElement,dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;r.dataset.theme=dark?'light':'dark';};
+</script>
+</body>
+</html>

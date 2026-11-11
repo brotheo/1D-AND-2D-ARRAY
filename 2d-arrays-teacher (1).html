@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2D Arrays – Teacher</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f7fb;--card:#fff;--ink:#1b1f2a;--muted:#5d6475;--line:#e3e6ee;--brand:#0f766e;--brand-soft:#e6f5f3;
+  --ok:#15803d;--ok-soft:#e8f7ee;--bad:#c2410c;--bad-soft:#fff1e8;--warn:#a16207;--warn-soft:#fff8db;--code-bg:#0f172a;--code-ink:#e2e8f0;--chip:#f1f3f8;}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0d1017;--card:#161a24;--ink:#e7e9ef;--muted:#9aa2b5;--line:#2a3040;--brand:#2dd4bf;--brand-soft:#11302c;
+  --ok:#4ade80;--ok-soft:#12291b;--bad:#fb923c;--bad-soft:#2d1a0e;--warn:#facc15;--warn-soft:#2b2610;--code-bg:#0a0d14;--chip:#1f2430;}}
+:root[data-theme="dark"]{
+  --bg:#0d1017;--card:#161a24;--ink:#e7e9ef;--muted:#9aa2b5;--line:#2a3040;--brand:#2dd4bf;--brand-soft:#11302c;
+  --ok:#4ade80;--ok-soft:#12291b;--bad:#fb923c;--bad-soft:#2d1a0e;--warn:#facc15;--warn-soft:#2b2610;--code-bg:#0a0d14;--chip:#1f2430;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.55 Inter,system-ui,sans-serif}
+.wrap{max-width:1060px;margin:0 auto;padding:0 16px 80px}
+header.hero{background:linear-gradient(135deg,#0f766e,#155e75);color:#fff;padding:26px 16px 20px;position:relative}
+.hero h1{margin:6px 0 4px;font-size:clamp(22px,4vw,32px);letter-spacing:-.02em}
+.hero p{margin:0;opacity:.9}
+.tag{display:inline-block;background:rgba(255,255,255,.18);border-radius:99px;padding:3px 10px;font-size:13px;font-weight:600;margin-right:6px}
+.lock{background:#fde68a;color:#713f12}
+.hbtns{position:absolute;top:14px;right:16px;display:flex;gap:6px}
+.hbtns button{background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:99px;padding:6px 12px;font:600 13px Inter,sans-serif;cursor:pointer}
+.timerbar{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.timerbar .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 16px}
+.clock{font:700 26px "JetBrains Mono",monospace;min-width:92px}
+.phase-now{font-weight:700}
+.phase-left{color:var(--muted);font-size:13px}
+.btn{font:inherit;font-weight:600;font-size:14px;border:0;border-radius:9px;padding:8px 13px;cursor:pointer;background:var(--brand);color:#fff}
+.btn.ghost{background:var(--chip);color:var(--ink)}
+.track{display:flex;width:100%;height:10px;border-radius:99px;overflow:hidden;background:var(--chip)}
+.track div{height:100%;border-right:2px solid var(--card);cursor:pointer;opacity:.35}
+.track div.past{opacity:.7}.track div.now{opacity:1}
+section.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;margin:20px 0}
+section.card.now{border:2px solid var(--brand);box-shadow:0 0 0 4px var(--brand-soft)}
+h2{margin:0 0 10px;font-size:21px;letter-spacing:-.01em}
+h3{margin:18px 0 6px;font-size:16px}
+.sec-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.sec-head h2{margin:0}
+.num{background:var(--brand);color:#fff;border-radius:10px;width:32px;height:32px;display:grid;place-items:center;font-weight:800;flex:none}
+.time{margin-left:auto;background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13px;border-radius:99px;padding:4px 10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid2>*,.grid3>*{min-width:0}
+.grid2 table{display:block;overflow-x:auto}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:780px){.grid2,.grid3{grid-template-columns:1fr}}
+.box{border-radius:12px;padding:12px 14px;background:var(--chip)}
+.box h4{margin:0 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.box ul{margin:0;padding-left:18px}
+.say{background:var(--brand-soft);border-left:4px solid var(--brand);border-radius:8px;padding:10px 14px;margin:10px 0}
+.say::before{content:"💬 Say: ";font-weight:700;color:var(--brand)}
+.watch{background:var(--warn-soft);border-left:4px solid var(--warn);border-radius:8px;padding:10px 14px;margin:10px 0}
+.watch::before{content:"👀 Watch for: ";font-weight:700;color:var(--warn)}
+.diff{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media (max-width:780px){.diff{grid-template-columns:1fr}}
+.diff div{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.diff b{display:block;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+pre.code{font:13.5px/1.6 "JetBrains Mono",monospace;background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:12px 14px;margin:6px 0;overflow:auto;white-space:pre}
+code{font-family:"JetBrains Mono",monospace;background:var(--chip);border-radius:5px;padding:1px 5px;font-size:.92em}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}
+th{background:var(--chip);font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.scroll{overflow-x:auto}
+details{border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:8px 0}
+details summary{cursor:pointer;font-weight:600}
+.alert{background:var(--bad-soft);border:1px solid var(--bad);color:var(--ink);border-radius:10px;padding:12px 14px;margin:12px 0}
+.alert b{color:var(--bad)}
+.alert ul{margin:6px 0 0;padding-left:18px}
+.ans{color:var(--ok);font-weight:700}
+@media print{
+  .timerbar,.hbtns{display:none}
+  body{background:#fff;color:#000}
+  section.card{break-inside:avoid;border:1px solid #ccc}
+  details{border:0;padding:0}
+}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="hbtns"><button id="printBtn">🖨 Print</button><button id="themeBtn">◐ Theme</button></div>
+  <div class="wrap" style="padding-bottom:0">
+    <span class="tag lock">🔒 Teacher only</span><span class="tag">IGCSE 0478 · Paper 2</span><span class="tag">60 min</span><span class="tag">2D arrays</span>
+    <h1>Teacher Guide: 2D Arrays – Total, Minimum &amp; Maximum</h1>
+    <p>Indexing, nested FOR loops, accumulators and selection: 8 runnable challenges worth 42 marks, from a whole-table total to a full 8-mark exam question.</p>
+  </div>
+</header>
+
+<div class="timerbar"><div class="wrap">
+  <span class="clock" id="clock">60:00</span>
+  <div style="flex:1;min-width:200px">
+    <div><span class="phase-now" id="phaseNow">Ready</span> <span class="phase-left" id="phaseLeft"></span></div>
+    <div class="track" id="track" style="margin-top:6px"></div>
+  </div>
+  <button class="btn" id="startBtn">▶ Start</button>
+  <button class="btn ghost" id="resetBtn">↺ Reset</button>
+</div></div>
+
+<main class="wrap">
+
+<section class="card" id="overview">
+  <h2>Lesson overview</h2>
+  <div class="grid3">
+    <div class="box"><h4>Learning objectives</h4><ul>
+      <li>Declare and index a 2D array as <code>Array[Row, Column]</code></li>
+      <li>Use nested FOR loops to visit every element</li>
+      <li>Write total, maximum, minimum, count and average algorithms over a whole 2D array</li>
+      <li>Process per row and per column, resetting in the right place</li></ul></div>
+    <div class="box"><h4>Success criteria</h4><ul>
+      <li>I can say which cell <code>Marks[3, 2]</code> is</li>
+      <li>I initialise before both loops for whole-table results</li>
+      <li>I reset inside the outer loop for per-row/per-column results</li>
+      <li>My code runs and gives the right output</li></ul></div>
+    <div class="box"><h4>Prior knowledge</h4><ul>
+      <li>1D standard methods (Week 9)</li><li>FOR…NEXT, IF…ELSE…ENDIF</li><li>The 2D river example (max and total of one column)</li></ul>
+      <h4 style="margin-top:10px">Keywords</h4>2D array, row, column, index, nested loop, outer/inner loop, accumulator, counter</div>
+  </div>
+  <h3>Lesson flow at a glance</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Time</th><th>Phase</th><th>Activity type</th><th>Grouping</th></tr></thead>
+    <tbody id="flowTable"></tbody>
+  </table></div>
+  <p class="phase-left">This follows your suggested sequence: Challenges 1–3 first, then 4–5 for row and column processing, then 6–8 as exam-level applications.</p>
+  <div class="alert"><b>Notes on the source challenges</b> (the student page already handles these):
+    <ul>
+      <li><b>Challenge 7 "Average: 76.50":</b> <code>ROUND(76.5, 2)</code> returns the number 76.5, and 0478 pseudocode has no format-to-2-d.p. function, so the output is <code>Average: 76.5</code>. Accept either on paper. The runner expects 76.5, and the student brief explains why.</li>
+      <li><b>Challenge 6:</b> every mark in the table is ≥ 50, so <code>Failed: 0</code> never tests the ELSE branch. Ask fast finishers to change <code>Marks[4, 1]</code> to 45 and predict the result (Passed: 11, Failed: 1).</li>
+      <li><b>Challenge 8</b> has no expected output in the source, so I made 20 test marks (below). The runner marks it against them in any order of messages, as long as total, highest, lowest and average come in that order.</li>
+      <li><b>Auto-scores</b> are an estimate: the challenge's marks × (checklist points met ÷ total points), and 0 if the code does not run. Use the mark points below for final marking.</li>
+    </ul></div>
+</section>
+
+<section class="card phase" id="p1">
+  <div class="sec-head"><div class="num">1</div><h2>Starter: Find the cell</h2><span class="time">0–5 min</span></div>
+  <p>The page asks for random cells, e.g. "Click Marks[3, 1]". Students need 6 correct in a row; a wrong click resets the streak and explains the row/column it actually was.</p>
+  <div class="say">Row first, column second, so the first number picks the <b>student</b> and the second picks the <b>subject</b>. What is <code>Marks[3, 1]</code>? (92: Student 3, Maths.)</div>
+  <div class="watch">Students reading <code>[3, 1]</code> as "column 3, row 1" (x, y as in maths graphs). That's the most common 2D indexing error.</div>
+</section>
+
+<section class="card phase" id="p2">
+  <div class="sec-head"><div class="num">2</div><h2>Nested loops: walking the table</h2><span class="time">5–12 min</span></div>
+  <p>The visualiser steps through the total algorithm one cell at a time. It numbers each cell as it is visited and shows Row, Col and the running Total. A toggle switches between outer loop = rows and outer loop = columns.</p>
+  <div class="say">The inner loop finishes completely before the outer loop moves on. With rows outside, we read across: 78, 85, 90, then the next row.</div>
+  <p><b>Predict task:</b> with columns outside, the 4th cell visited is <span class="ans">Marks[4, 1] = 55</span>. The total is still <span class="ans">918</span>, because only the order changes.</p>
+  <h3>The three placement rules (point at the rule cards)</h3>
+  <table><thead><tr><th>Result wanted</th><th>Initialise</th><th>Update</th><th>Output</th></tr></thead><tbody>
+    <tr><td>One value for the whole table (total, max, min, count)</td><td>before both loops</td><td>inner loop</td><td>after both loops</td></tr>
+    <tr><td>One value per row (student total)</td><td>inside outer, before inner</td><td>inner loop</td><td>after inner, inside outer</td></tr>
+    <tr><td>One value per column (subject max)</td><td>inside outer (outer = column), before inner</td><td>inner loop</td><td>after inner, inside outer</td></tr>
+  </tbody></table>
+</section>
+
+<section class="card phase" id="p3">
+  <div class="sec-head"><div class="num">3</div><h2>Core: Challenges 1–3</h2><span class="time">12–24 min</span></div>
+  <p>Individual. The data is pre-loaded except in Challenge 1, where students must write the DECLARE themselves. Without it the runner says "array used before it was declared".</p>
+  <div class="scroll"><table>
+    <thead><tr><th>#</th><th>Output</th><th>Mark points</th><th>Marks</th></tr></thead><tbody>
+    <tr><td>1 Total</td><td class="ans">918</td><td>• <code>DECLARE Marks : ARRAY[1:4, 1:3] OF INTEGER</code><br>• <code>Total ← 0</code> before the loops<br>• Nested FOR loops<br>• <code>Total ← Total + Marks[Row, Col]</code> and OUTPUT after the loops</td><td>4</td></tr>
+    <tr><td>2 Highest</td><td class="ans">92</td><td>• <code>Maximum ← Marks[1, 1]</code><br>• Nested FOR loops over every element<br>• <code>IF Marks[Row, Col] &gt; Maximum</code> then update<br>• OUTPUT after the loops</td><td>4</td></tr>
+    <tr><td>3 Lowest</td><td class="ans">55</td><td>• <code>Minimum ← Marks[1, 1]</code><br>• Nested FOR loops over every element<br>• <code>IF Marks[Row, Col] &lt; Minimum</code> then update<br>• OUTPUT after the loops</td><td>4</td></tr>
+  </tbody></table></div>
+  <details><summary>Model answers 1–3</summary>
+<pre class="code">// Challenge 1
+DECLARE Marks : ARRAY[1:4, 1:3] OF INTEGER
+Total ← 0
+FOR Row ← 1 TO 4
+    FOR Col ← 1 TO 3
+        Total ← Total + Marks[Row, Col]
+    NEXT Col
+NEXT Row
+OUTPUT Total
+
+// Challenge 2
+Maximum ← Marks[1, 1]
+FOR Row ← 1 TO 4
+    FOR Col ← 1 TO 3
+        IF Marks[Row, Col] > Maximum
+            THEN
+                Maximum ← Marks[Row, Col]
+        ENDIF
+    NEXT Col
+NEXT Row
+OUTPUT Maximum
+
+// Challenge 3: same as 2 with Minimum and &lt;</pre></details>
+  <div class="watch">For max/min, the loops start at 1, not 2. Unlike the 1D version, you can't skip "the first element" by starting one loop at 2: <code>FOR Row ← 2</code> would skip the whole of row 1. Comparing <code>Marks[1, 1]</code> with itself is harmless.</div>
+  <div class="diff"><div><b>Support</b>Copy the visualiser's code for Challenge 1; then change one line at a time for 2 and 3.</div>
+    <div><b>Stretch</b>"Also output <i>which</i> student and subject had the highest mark." (Store Row and Col alongside Maximum: Student 3, Maths.)</div></div>
+</section>
+
+<section class="card phase" id="p4">
+  <div class="sec-head"><div class="num">4</div><h2>Row and column processing: Challenges 4–5</h2><span class="time">24–36 min</span></div>
+  <div class="scroll"><table>
+    <thead><tr><th>#</th><th>Output</th><th>Mark points</th><th>Marks</th></tr></thead><tbody>
+    <tr><td>4 Total per student</td><td class="ans">Student 1: 253<br>Student 2: 225<br>Student 3: 247<br>Student 4: 193</td><td>• Outer loop over rows<br>• <code>StudentTotal ← 0</code> inside outer, before inner<br>• Inner loop over the 3 columns<br>• <code>StudentTotal ← StudentTotal + Marks[Row, Col]</code><br>• OUTPUT with the student number, after the inner loop</td><td>5</td></tr>
+    <tr><td>5 Highest per subject</td><td class="ans">Maths: 92<br>English: 85<br>Science: 90</td><td>• Outer loop over columns (1 TO 3)<br>• <code>Highest ← Marks[1, Col]</code> inside outer<br>• Inner loop over rows<br>• <code>IF Marks[Row, Col] &gt; Highest</code> then update<br>• OUTPUT subject name with Highest after the inner loop<br>• Correct index order <code>[Row, Col]</code> kept even though the loops are swapped</td><td>6</td></tr>
+  </tbody></table></div>
+  <details><summary>Model answers 4–5</summary>
+<pre class="code">// Challenge 4
+FOR Row ← 1 TO 4
+    StudentTotal ← 0
+    FOR Col ← 1 TO 3
+        StudentTotal ← StudentTotal + Marks[Row, Col]
+    NEXT Col
+    OUTPUT "Student ", Row, ": ", StudentTotal
+NEXT Row
+
+// Challenge 5 (Subjects[1:3] holds the names)
+FOR Col ← 1 TO 3
+    Highest ← Marks[1, Col]
+    FOR Row ← 2 TO 4
+        IF Marks[Row, Col] > Highest
+            THEN
+                Highest ← Marks[Row, Col]
+        ENDIF
+    NEXT Row
+    OUTPUT Subjects[Col], ": ", Highest
+NEXT Col</pre></details>
+  <div class="watch"><b>Reset outside the outer loop</b> in Challenge 4 gives running totals: 253, 478, 725, 918. The runner shows this, so ask "why does student 4 have 918?". In Challenge 5, students who swap the loops often also swap the index to <code>Marks[Col, Row]</code>. That runs off the end of the array.</div>
+  <div class="diff"><div><b>Support</b>Give the outer and inner FOR lines; students place the reset and the OUTPUT.</div>
+    <div><b>Stretch</b>Output each subject's total and the student with the best total. (Answers: 290, 305, 323; Student 1.)</div></div>
+</section>
+
+<section class="card phase" id="p5">
+  <div class="sec-head"><div class="num">5</div><h2>Counting and averages: Challenges 6–7</h2><span class="time">36–44 min</span></div>
+  <div class="scroll"><table>
+    <thead><tr><th>#</th><th>Output</th><th>Mark points</th><th>Marks</th></tr></thead><tbody>
+    <tr><td>6 Pass/fail counts</td><td class="ans">Passed: 12<br>Failed: 0</td><td>• Passed and Failed both ← 0<br>• Nested loops over all elements<br>• <code>IF Marks[Row, Col] &gt;= 50</code> (50 is a pass)<br>• Passed + 1<br>• ELSE Failed + 1<br>• Both counts output with messages</td><td>6</td></tr>
+    <tr><td>7 Class average</td><td class="ans">Average: 76.5</td><td>• Total and Count ← 0<br>• Total accumulates every element<br>• Count + 1 for every element (or 4 × 3)<br>• <code>Average ← Total / Count</code> after the loops<br>• <code>ROUND(Average, 2)</code> output with a message</td><td>5</td></tr>
+  </tbody></table></div>
+  <details><summary>Model answers 6–7</summary>
+<pre class="code">// Challenge 6
+Passed ← 0
+Failed ← 0
+FOR Row ← 1 TO 4
+    FOR Col ← 1 TO 3
+        IF Marks[Row, Col] >= 50
+            THEN
+                Passed ← Passed + 1
+            ELSE
+                Failed ← Failed + 1
+        ENDIF
+    NEXT Col
+NEXT Row
+OUTPUT "Passed: ", Passed
+OUTPUT "Failed: ", Failed
+
+// Challenge 7
+Total ← 0
+Count ← 0
+FOR Row ← 1 TO 4
+    FOR Col ← 1 TO 3
+        Total ← Total + Marks[Row, Col]
+        Count ← Count + 1
+    NEXT Col
+NEXT Row
+Average ← Total / Count
+OUTPUT "Average: ", ROUND(Average, 2)</pre></details>
+  <div class="watch"><code>&gt; 50</code> instead of <code>&gt;= 50</code>. It makes no difference with this data, so ask what would happen with a mark of exactly 50. In Challenge 7, watch for <code>Total DIV Count</code> (gives 76) and the average calculated inside the loop.</div>
+</section>
+
+<section class="card phase" id="p6">
+  <div class="sec-head"><div class="num">6</div><h2>Examination challenge: Challenge 8 [8]</h2><span class="time">44–56 min</span></div>
+  <p>Silent, exam conditions. Students write a complete solution starting from only the DECLARE. The Test inputs box holds 20 marks, row by row.</p>
+  <div class="grid2">
+    <div><h3>Test data (5 students × 4 subjects)</h3>
+      <table><thead><tr><th></th><th>S1</th><th>S2</th><th>S3</th><th>S4</th><th>Row total</th></tr></thead><tbody>
+      <tr><th>Student 1</th><td>45</td><td>67</td><td>89</td><td>72</td><td>273</td></tr>
+      <tr><th>Student 2</th><td>90</td><td>38</td><td>66</td><td>81</td><td>275</td></tr>
+      <tr><th>Student 3</th><td>55</td><td>74</td><td>60</td><td>99</td><td>288</td></tr>
+      <tr><th>Student 4</th><td>23</td><td>88</td><td>71</td><td>64</td><td>246</td></tr>
+      <tr><th>Student 5</th><td>80</td><td>59</td><td>47</td><td>92</td><td>278</td></tr></tbody></table>
+      <p>Total <span class="ans">1360</span> · highest <span class="ans">99</span> · lowest <span class="ans">23</span> · average <span class="ans">68</span></p>
+      <h3>Mark points (8)</h3>
+      <ol>
+        <li>Nested FOR loops (1 TO 5, 1 TO 4) for input</li>
+        <li><code>INPUT Marks[Row, Col]</code> with a prompt</li>
+        <li><code>Total ← 0</code> and accumulates every element</li>
+        <li>Highest initialised from <code>Marks[1, 1]</code> <b>after</b> the input loop</li>
+        <li>Lowest initialised from <code>Marks[1, 1]</code> <b>after</b> the input loop</li>
+        <li>Correct <code>&gt;</code> and <code>&lt;</code> comparisons inside nested loops</li>
+        <li><code>Average ← Total / 20</code> (or a count) after the loops</li>
+        <li>Total, highest, lowest and average all output with messages</li>
+      </ol></div>
+    <div><h3>Model answer</h3>
+<pre class="code">FOR Row ← 1 TO 5
+    FOR Col ← 1 TO 4
+        OUTPUT "Enter mark for student ", Row, ", subject ", Col
+        INPUT Marks[Row, Col]
+    NEXT Col
+NEXT Row
+Total ← 0
+Highest ← Marks[1, 1]
+Lowest ← Marks[1, 1]
+FOR Row ← 1 TO 5
+    FOR Col ← 1 TO 4
+        Total ← Total + Marks[Row, Col]
+        IF Marks[Row, Col] > Highest
+            THEN
+                Highest ← Marks[Row, Col]
+        ENDIF
+        IF Marks[Row, Col] < Lowest
+            THEN
+                Lowest ← Marks[Row, Col]
+        ENDIF
+    NEXT Col
+NEXT Row
+Average ← Total / 20
+OUTPUT "Total marks for the class: ", Total
+OUTPUT "Highest mark: ", Highest
+OUTPUT "Lowest mark: ", Lowest
+OUTPUT "Class average: ", Average</pre>
+      <p class="phase-left">A single loop that inputs and processes at the same time is also accepted. Highest/Lowest must then start at a value set before the loop, e.g. initialised on the first input, or 0 and 100 if the question states marks are 0–100.</p></div>
+  </div>
+  <div class="watch"><code>Highest ← Marks[1, 1]</code> placed <b>before</b> the input loop. The array is still empty, so the runner reports a value used before it was given one.</div>
+</section>
+
+<section class="card phase" id="p7">
+  <div class="sec-head"><div class="num">7</div><h2>Checklist &amp; close</h2><span class="time">56–60 min</span></div>
+  <p>Students tick the 8 "I can…" statements (saved on their device), write one tricky thing and press <b>Copy my lesson summary</b>. The summary includes each challenge score, the total out of 42, which checklist items are not yet ticked, and their note.</p>
+  <h3>Key techniques</h3>
+  <table><thead><tr><th>Challenge</th><th>Main programming concept</th></tr></thead><tbody>
+    <tr><td>1</td><td>Accumulator</td></tr><tr><td>2</td><td>Maximum algorithm</td></tr><tr><td>3</td><td>Minimum algorithm</td></tr>
+    <tr><td>4</td><td>Row total</td></tr><tr><td>5</td><td>Column maximum</td></tr><tr><td>6</td><td>Counter and selection</td></tr>
+    <tr><td>7</td><td>Average calculation</td></tr><tr><td>8</td><td>Input, nested iteration and combined algorithms</td></tr></tbody></table>
+  <div class="say">If you couldn't tick "I can calculate row totals and column totals", redo Challenge 4 from a blank page tonight.</div>
+</section>
+</main>
+
+<script>
+const phases=[
+ {id:'p1',name:'Starter: Find the cell',m:5,type:'Indexing game',grp:'Individual',c:'#0ea5e9'},
+ {id:'p2',name:'Nested loops visualiser',m:7,type:'Direct instruction + step-through',grp:'Whole class',c:'#6366f1'},
+ {id:'p3',name:'Core: Challenges 1–3',m:12,type:'Total / max / min (runnable)',grp:'Individual',c:'#8b5cf6'},
+ {id:'p4',name:'Rows & columns: 4–5',m:12,type:'Row total / column max',grp:'Individual → pairs',c:'#ec4899'},
+ {id:'p5',name:'Count & average: 6–7',m:8,type:'Counters, selection, average',grp:'Individual',c:'#f97316'},
+ {id:'p6',name:'Exam: Challenge 8',m:12,type:'8-mark exam question with input',grp:'Individual, exam conditions',c:'#ef4444'},
+ {id:'p7',name:'Checklist & close',m:4,type:'Self-assessment',grp:'Individual',c:'#14b8a6'}
+];
+const TOTAL=60*60;
+let starts=[],acc=0;phases.forEach(p=>{starts.push(acc);acc+=p.m*60;});
+const fmt=s=>{s=Math.max(0,Math.round(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');};
+document.getElementById('flowTable').innerHTML=phases.map((p,i)=>`<tr><td>${starts[i]/60}–${(starts[i]+p.m*60)/60} min</td><td><a href="#${p.id}">${p.name}</a></td><td>${p.type}</td><td>${p.grp}</td></tr>`).join('');
+const track=document.getElementById('track');
+track.innerHTML=phases.map((p,i)=>`<div title="${p.name} (${p.m} min)" style="width:${p.m/60*100}%;background:${p.c}" data-i="${i}"></div>`).join('');
+let elapsed=0,running=false,timer=null,last=null,lastPhase=-1;
+try{const s=JSON.parse(localStorage.getItem('a2d0478_teacher_timer')||'null');if(s)elapsed=s.e;}catch(e){}
+function save(){try{localStorage.setItem('a2d0478_teacher_timer',JSON.stringify({e:elapsed}));}catch(e){}}
+function current(){for(let i=phases.length-1;i>=0;i--) if(elapsed>=starts[i]) return i; return 0;}
+function render(){
+  document.getElementById('clock').textContent=fmt(TOTAL-elapsed);
+  const i=current(),p=phases[i];
+  if(elapsed>=TOTAL){document.getElementById('phaseNow').textContent='Lesson complete';document.getElementById('phaseLeft').textContent='';}
+  else{document.getElementById('phaseNow').textContent=(i+1)+'. '+p.name;
+    document.getElementById('phaseLeft').textContent='· '+fmt(starts[i]+p.m*60-elapsed)+' left in this phase';}
+  [...track.children].forEach((d,k)=>d.className=k<i?'past':k===i&&elapsed>0?'now':'');
+  document.querySelectorAll('section.phase').forEach(s=>s.classList.toggle('now',elapsed>0&&s.id===p.id&&elapsed<TOTAL));
+}
+function beep(){try{const a=new (window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.value=880;g.gain.value=.08;o.start();o.stop(a.currentTime+.25);}catch(e){}}
+function tick(){const now=Date.now();elapsed+=(now-last)/1000;last=now;
+  if(elapsed>=TOTAL){elapsed=TOTAL;stop();}
+  const i=current(); if(i!==lastPhase&&running){lastPhase=i;beep();}
+  render();save();}
+function start(){running=true;last=Date.now();lastPhase=current();timer=setInterval(tick,250);document.getElementById('startBtn').textContent='⏸ Pause';}
+function stop(){running=false;clearInterval(timer);document.getElementById('startBtn').textContent='▶ Start';}
+document.getElementById('startBtn').onclick=()=>running?stop():start();
+document.getElementById('resetBtn').onclick=()=>{stop();elapsed=0;save();render();};
+track.onclick=e=>{const i=e.target.dataset.i;if(i===undefined)return;elapsed=starts[+i];lastPhase=+i;save();render();
+  document.getElementById(phases[+i].id).scrollIntoView({behavior:'smooth',block:'start'});};
+document.getElementById('printBtn').onclick=()=>{document.querySelectorAll('details').forEach(d=>d.open=true);print();};
+document.getElementById('themeBtn').onclick=()=>{const r=document.documentElement,dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;r.dataset.theme=dark?'light':'dark';};
+render();
+</script>
+</body>
+</html>
